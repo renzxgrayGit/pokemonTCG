@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Pokemon TCG</title>
+    <link rel="stylesheet" href="pokemontcg.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script defer>
+        $(document).ready(function(){
+            /* Loop through API to get Pokemon cards */
+            for(var i = 1; i <= 100; i++){
+                var url = "https://api.pokemontcg.io/v2/cards/ex11-" + i;
+                $.get(url, function(res) {
+                    var html_str = "<div class='card-holder'>"; // Create a container for each card
+                    /* html_str += "<h1>" + res.data.id + "</h1>"; */ // Display the card name
+                    html_str += "<img src='" + res.data.images.small + "' class='pokemon-card' data-name='" + res.data.name + "' data-types='" + res.data.types.join(", ") + "' data-hp='" + res.data.hp + "' data-evolves-from='" + (res.data.evolvesFrom ? res.data.evolvesFrom : "None") + "'>"; // Display the card image
+                    html_str += "</div>";
+                    $("#pokemon").append(html_str); // Append the container to the #pokemon div
+                }, "json");
+            }
+        });
+
+        /* When a Pokemon card is clicked, display its details in a modal */
+        $(document).on("click", ".pokemon-card", function(){
+            var name = $(this).data("name");
+            var types = $(this).data("types");
+            var hp = $(this).data("hp");
+            var evolvesFrom = $(this).data("evolves-from");
+
+            var modalContent = "<p>Name: " + name + "</p>";
+            modalContent += "<p>Types: " + types + "</p>";
+            modalContent += "<p>HP: " + hp + "</p>";
+            modalContent += "<p>Evolves From: " + evolvesFrom + "</p>";
+
+            $("#modalContent").html(modalContent);
+            $("#myModal").css("display", "block");
+        });
+
+        /* When the user clicks anywhere outside of the modal, close it */
+        $(window).click(function(event) {
+            if (event.target == $("#myModal")[0]) {
+                $("#myModal").css("display", "none");
+            }
+        });
+    </script>
+</head>
+<body>
+    <div id="pokemon">
+    </div>
+    <!-- Modal -->
+    <div id="myModal" class="modal">
+        <div class="modal-content" id="modalContent">
+        </div>
+    </div>
+</body>
+</html>
